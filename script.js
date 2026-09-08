@@ -1,10 +1,3 @@
-/* ==========================================================================
-   Aditya Ghosh — Portfolio Script
-   Vanilla JS, no dependencies. Progressive enhancement: every feature here
-   degrades gracefully if a browser API isn't available — the page already
-   works without this file, this just makes it feel alive.
-   ========================================================================== */
-
 (() => {
   'use strict';
 
