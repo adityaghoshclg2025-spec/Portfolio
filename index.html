@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aditya Ghosh | ECE Student — Embedded Systems, IoT & VLSI</title>
+<meta name="description" content="Portfolio of Aditya Ghosh, B.Tech ECE student at SRMIST, focused on Embedded Systems, IoT, FPGA Design, AI and VLSI." />
+
+<style>
+
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ---------- Design tokens ---------- */
+:root {
+  --bg: #08080b;
+  --bg-alt: #101015;
+  --ink: #f2f1ed;
+  --ink-muted: #9a9aa4;
+  --line: rgba(242, 241, 237, 0.09);
+  --line-strong: rgba(242, 241, 237, 0.18);
+
+  --copper: #ce8a52;
+  --signal: #58e6c9;
+  --signal-dim: rgba(88, 230, 201, 0.16);
+
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --nav-height: 76px;
+  --radius: 6px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+img, svg { display: block; max-width: 100%; }
+ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.1; letter-spacing: -0.01em; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+section[id] { scroll-margin-top: var(--nav-height); }
+body.nav-open { overflow: hidden; }
+
+/* Real page content sits in its own stacking context, explicitly above the
+   fixed ambient background layer — belt-and-braces against any stacking bugs. */
+#main-content, .site-footer { position: relative; z-index: 1; }
+
+/* ---------- Ambient background FX ---------- */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image:
+    radial-gradient(700px circle at 20% 25%, rgba(206, 138, 82, 0.30), transparent 60%),
+    radial-gradient(650px circle at 80% 75%, rgba(88, 230, 201, 0.24), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(242, 241, 237, 0.035) 0 1px, transparent 1px 46px),
+    repeating-linear-gradient(90deg, rgba(242, 241, 237, 0.035) 0 1px, transparent 1px 46px);
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
+  background-position: 15% 20%, 85% 80%, 0 0, 0 0;
+  animation: driftGlow 24s ease-in-out infinite;
+}
+body::after {
+  content: "";
+  position: fixed;
+  left: 0; right: 0; top: -160px;
+  height: 160px;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    transparent, rgba(88, 230, 201, 0.05) 45%, rgba(88, 230, 201, 0.12) 50%,
+    rgba(88, 230, 201, 0.05) 55%, transparent);
+  animation: scanSweep 11s linear infinite;
+}
+@keyframes driftGlow {
+  0%, 100% { background-position: 15% 20%, 85% 80%, 0 0, 0 0; }
+  50%      { background-position: 30% 38%, 68% 62%, 0 0, 0 0; }
+}
+@keyframes scanSweep {
+  0%   { transform: translateY(0);      opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateY(112vh);  opacity: 0; }
+}
+
+/* ---------- Accessibility ---------- */
+.skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 1000;
+  background: var(--signal); color: #04140f;
+  font-family: var(--font-mono); font-size: 0.85rem;
+  padding: 0.75rem 1.25rem; border-radius: var(--radius);
+}
+.skip-link:focus { left: 1rem; top: 1rem; }
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 3px;
+}
+
+/* ---------- Scroll reveal (progressively enhanced by the script below) ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.reveal.is-visible { opacity: 1; transform: none; }
+
+/* ---------- Section rhythm + circuit-trace dividers ---------- */
+section {
+  position: relative;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 4vw, 3rem);
+}
+section:not(:last-of-type)::after {
+  content: "";
+  position: absolute;
+  left: clamp(1.25rem, 4vw, 3rem); right: clamp(1.25rem, 4vw, 3rem); bottom: 0;
+  height: 2px;
+  background-color: var(--line);
+  background-image: linear-gradient(90deg, transparent, var(--signal), transparent);
+  background-size: 26% 100%;
+  background-repeat: no-repeat;
+  background-position: -26% 0;
+  animation: tracePulse 7s ease-in-out infinite;
+}
+@keyframes tracePulse {
+  0%   { background-position: -26% 0; }
+  100% { background-position: 126% 0; }
+}
+h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 600; margin-bottom: 2rem; }
+
+/* ---------- Header / nav ---------- */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--nav-height);
+  z-index: 100;
+  background: rgba(8, 8, 11, 0.65);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.site-header.scrolled { background: rgba(8, 8, 11, 0.88); border-bottom-color: var(--line-strong); }
+
+.nav-wrap {
+  max-width: 1180px; height: 100%;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo {
+  font-family: var(--font-mono); font-size: 0.95rem; font-weight: 500;
+  letter-spacing: 0.02em; text-transform: uppercase;
+}
+.primary-nav ul { display: flex; gap: clamp(1.25rem, 3vw, 2.25rem); }
+.primary-nav a {
+  position: relative;
+  font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink-muted);
+  transition: color 0.25s var(--ease);
+}
+.primary-nav a::after {
+  content: ""; position: absolute; left: 0; bottom: -6px; width: 100%; height: 1px;
+  background: var(--signal); transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s var(--ease);
+}
+.primary-nav a:hover, .primary-nav a.active { color: var(--ink); }
+.primary-nav a:hover::after, .primary-nav a.active::after { transform: scaleX(1); }
+
+.nav-toggle {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  padding: 6px; z-index: 101;
+}
+.nav-toggle-bar {
+  width: 20px; height: 2px; background: var(--ink); border-radius: 2px;
+  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
+}
+.nav-toggle.is-active .nav-toggle-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle.is-active .nav-toggle-bar:nth-child(2) { opacity: 0; }
+.nav-toggle.is-active .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ---------- Hero ---------- */
+/* min-height is tied to the viewport once, and padding-top exactly equals the
+   fixed header's height — no double-counted offsets, no oversized empty gap. */
+.hero {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-top: var(--nav-height);
+}
+.hero-content { max-width: 720px; position: relative; z-index: 1; }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--ink-muted); margin-bottom: 1.25rem;
+}
+.eyebrow::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--signal);
+  animation: pulseDot 2.2s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%   { box-shadow: 0 0 0 0 rgba(88, 230, 201, 0.55); }
+  70%  { box-shadow: 0 0 0 7px rgba(88, 230, 201, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(88, 230, 201, 0); }
+}
+
+/* Solid, always-visible base color first; the gradient clip is layered on
+   top only when the browser actually supports it, so the heading is never
+   invisible. */
+.hero h1 {
+  font-size: clamp(2.75rem, 8vw, 5.25rem);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 1.25rem;
+}
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .hero h1 {
+    background: linear-gradient(120deg, var(--ink) 40%, var(--copper) 75%, var(--signal) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+.hero-tagline {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  color: var(--ink-muted);
+  max-width: 46ch;
+  margin-bottom: 2.25rem;
+}
+.hero-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2.5rem; }
+.hero-socials { display: flex; gap: 0.75rem; }
+
+.icon-link {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-muted);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 0.55rem 0.9rem;
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.icon-link:hover { color: var(--signal); border-color: var(--signal-dim); transform: translateY(-2px); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  position: relative; overflow: hidden; isolation: isolate;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 0.02em;
+  padding: 0.85rem 1.5rem; border-radius: var(--radius);
+  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.btn::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: translateX(-130%);
+  transition: transform 0.6s var(--ease);
+  pointer-events: none;
+}
+.btn:hover::before { transform: translateX(130%); }
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: var(--copper); color: #16100a; font-weight: 500; }
+.btn-secondary { border: 1px solid var(--line-strong); color: var(--ink); }
+.btn-secondary:hover { border-color: var(--signal); }
+.btn-project { border: 1px solid var(--line-strong); color: var(--ink); font-size: 0.78rem; padding: 0.65rem 1.1rem; }
+.btn-project::after { content: "→"; transition: transform 0.25s var(--ease); }
+.btn-project:hover { border-color: var(--signal); color: var(--signal); }
+.btn-project:hover::after { transform: translateX(3px); }
+
+/* ---------- About + languages ---------- */
+.about p { max-width: 62ch; color: var(--ink-muted); font-size: 1.02rem; }
+.languages { margin-top: 2.5rem; }
+.languages h3 {
+  font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--ink-muted); margin-bottom: 1rem;
+}
+.language-list { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.language-list li {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-mono); font-size: 0.82rem;
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 0.45rem 0.85rem;
+}
+.status-tag {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--copper); border: 1px solid rgba(206, 138, 82, 0.35);
+  border-radius: 3px; padding: 0.15rem 0.4rem;
+}
+.status-tag::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--copper);
+  animation: pulseDot 2.2s ease-in-out infinite;
+}
+
+/* ---------- Education ---------- */
+.education-card {
+  position: relative; max-width: 560px;
+  border: 1px solid var(--line); background: var(--bg-alt);
+  border-radius: var(--radius); padding: 2rem;
+}
+.education-card::before {
+  content: "PROFILE"; display: block;
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em;
+  color: var(--signal); margin-bottom: 1rem;
+}
+.education-card h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.5rem; }
+.education-card .org { color: var(--ink-muted); margin-bottom: 1.25rem; }
+.education-card .cgpa {
+  display: flex; align-items: baseline; gap: 0.5rem;
+  font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink-muted);
+  border-top: 1px solid var(--line); padding-top: 1rem; width: 100%;
+}
+.education-card .cgpa strong { font-size: 1.5rem; color: var(--signal); font-weight: 600; }
+
+/* ---------- Skills ---------- */
+.skills-list { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.skills-list li {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  font-family: var(--font-mono); font-size: 0.85rem;
+  background: var(--bg-alt); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 0.65rem 1.1rem;
+  transition: border-color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.skills-list li::before { content: ""; width: 6px; height: 6px; background: var(--copper); border-radius: 1px; }
+.skills-list li:hover { border-color: var(--signal-dim); transform: translateY(-2px); }
+
+/* ---------- Projects ---------- */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+.project-card {
+  border: 1px solid var(--line); background: var(--bg-alt); border-radius: var(--radius);
+  padding: 1.75rem; display: flex; flex-direction: column;
+  transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.project-card::before {
+  display: block;
+  font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--signal); margin-bottom: 0.85rem;
+}
+.project-card:nth-child(1)::before { content: "IoT · Sensors"; }
+.project-card:nth-child(2)::before { content: "Automation"; }
+.project-card:nth-child(3)::before { content: "Digital Design · HDL"; }
+.project-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; }
+.project-card p { color: var(--ink-muted); font-size: 0.92rem; margin-bottom: 1.5rem; flex-grow: 1; }
+.project-card .btn-project { align-self: flex-start; }
+.project-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--line-strong);
+  box-shadow: 0 18px 40px -20px rgba(88, 230, 201, 0.25);
+}
+
+/* ---------- Contact ---------- */
+.contact-links { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 3rem; }
+.quote {
+  max-width: 60ch;
+  font-family: var(--font-display); font-style: italic;
+  font-size: clamp(1.15rem, 2.4vw, 1.5rem); line-height: 1.5;
+  color: var(--ink); position: relative;
+  padding-left: 1.5rem; border-left: 2px solid var(--copper);
+}
+
+/* ---------- Footer ---------- */
+.site-footer { max-width: 1180px; margin-inline: auto; padding: 2.5rem clamp(1.25rem, 4vw, 3rem) 3rem; text-align: center; }
+.site-footer p { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-muted); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 760px) {
+  .nav-toggle { display: flex; }
+  .primary-nav {
+    position: fixed; top: var(--nav-height); left: 0; right: 0;
+    background: rgba(8, 8, 11, 0.97);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.35s var(--ease);
+  }
+  .primary-nav.is-open { max-height: 60vh; }
+  .primary-nav ul { flex-direction: column; gap: 0; padding: 0.5rem clamp(1.25rem, 4vw, 3rem) 1.5rem; }
+  .primary-nav li { border-top: 1px solid var(--line); }
+  .primary-nav li:first-child { border-top: none; }
+  .primary-nav a { display: block; padding: 0.9rem 0; font-size: 0.85rem; }
+  .primary-nav a::after { display: none; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  body::before, body::after,
+  .eyebrow::before, .status-tag::before,
+  section:not(:last-of-type)::after,
+  .btn::before,
+  .reveal {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+
+<!-- ============ HEADER / NAV ============ -->
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="#hero" class="logo">Aditya Ghosh</a>
+
+    <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+
+    <nav id="primary-nav" class="primary-nav">
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!-- ============ HERO ============ -->
+  <section id="hero" class="hero">
+    <div class="hero-content">
+      <p class="eyebrow">Electronics &amp; Communication Engineering</p>
+      <h1>Aditya Ghosh</h1>
+      <p class="hero-tagline">
+        Building at the intersection of hardware and software —
+        Embedded Systems, IoT, FPGA Design, AI, and VLSI.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-primary">View Projects</a>
+        <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+      </div>
+
+      <div class="hero-socials">
+        <a href="https://www.linkedin.com/in/aditya-ghosh-ece/" class="icon-link icon-linkedin" target="_blank" rel="noopener noreferrer" aria-label="Aditya Ghosh on LinkedIn">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+            <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/>
+          </svg>
+          <span>LinkedIn</span>
+        </a>
+
+        <a href="https://github.com/adityaghoshclg2025-spec" class="icon-link icon-github" target="_blank" rel="noopener noreferrer" aria-label="Aditya Ghosh on GitHub">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+            <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.42.36.78 1.07.78 2.16 0 1.56-.01 2.82-.01 3.2 0 .3.2.66.79.55A10.51 10.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about" class="about">
+    <h2>About Me</h2>
+    <p>
+      I am an Electronics and Communication Engineering student passionate about
+      Embedded Systems, IoT, FPGA Design, Artificial Intelligence, and VLSI.
+      My goal is to build innovative hardware and software solutions while
+      preparing for research and higher studies.
+    </p>
+
+    <div class="languages">
+      <h3>Languages</h3>
+      <ul class="language-list">
+        <li>English</li>
+        <li>Hindi</li>
+        <li>Bengali</li>
+        <li>Tamil</li>
+        <li>German <span class="status-tag">Learning</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ EDUCATION ============ -->
+  <section id="education" class="education">
+    <h2>Education</h2>
+    <div class="education-card">
+      <h3>B.Tech, Electronics &amp; Communication Engineering</h3>
+      <p class="org">SRM Institute of Science and Technology (SRMIST)</p>
+      <p class="cgpa">CGPA: <strong>9.51</strong></p>
+    </div>
+  </section>
+
+  <!-- ============ SKILLS ============ -->
+  <section id="skills" class="skills">
+    <h2>Skills</h2>
+    <ul class="skills-list">
+      <li>Embedded Systems</li>
+      <li>IoT</li>
+      <li>Python</li>
+      <li>C</li>
+      <li>VLSI Design</li>
+    </ul>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section id="projects" class="projects">
+    <h2>Projects</h2>
+    <div class="project-grid">
+
+      <article class="project-card">
+        <h3>Smart Plant Monitoring System</h3>
+        <p>
+          An IoT-based system that tracks soil moisture, temperature, and humidity
+          to help keep plants healthy, with real-time sensor readings.
+        </p>
+        <a href="https://github.com/adityaghoshclg2025-spec" class="btn btn-project" target="_blank" rel="noopener noreferrer">View Project</a>
+      </article>
+
+      <article class="project-card">
+        <h3>Email Alerting System</h3>
+        <p>
+          An automated alerting system that sends email notifications when
+          defined sensor thresholds or events are triggered.
+        </p>
+        <a href="https://github.com/adityaghoshclg2025-spec" class="btn btn-project" target="_blank" rel="noopener noreferrer">View Project</a>
+      </article>
+
+      <article class="project-card">
+        <h3>FPGA Design</h3>
+        <p>
+          Digital logic design and implementation on FPGA hardware using
+          HDL, built for embedded and hardware-acceleration applications.
+        </p>
+        <a href="https://github.com/adityaghoshclg2025-spec" class="btn btn-project" target="_blank" rel="noopener noreferrer">View Project</a>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact" class="contact">
+    <h2>Contact</h2>
+    <div class="contact-links">
+      <a href="https://www.linkedin.com/in/aditya-ghosh-ece/" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://github.com/adityaghoshclg2025-spec" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">GitHub</a>
+    </div>
+
+    <blockquote class="quote">
+      “I'm always interested in internships, collaborations and exciting engineering projects.”
+    </blockquote>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <p>&copy; <span id="year">2026</span> Aditya Ghosh. All rights reserved.</p>
+</footer>
+
+<script>
+(() => {
+  'use strict';
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Footer year */
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  /* Mobile nav toggle */
+  const navToggle = document.querySelector('.nav-toggle');
+  const primaryNav = document.getElementById('primary-nav');
+
+  if (navToggle && primaryNav) {
+    const openNav = () => {
+      primaryNav.classList.add('is-open');
+      navToggle.classList.add('is-active');
+      navToggle.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('nav-open');
+    };
+    const closeNav = () => {
+      primaryNav.classList.remove('is-open');
+      navToggle.classList.remove('is-active');
+      navToggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('nav-open');
+    };
+
+    navToggle.addEventListener('click', () => {
+      primaryNav.classList.contains('is-open') ? closeNav() : openNav();
+    });
+    primaryNav.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeNav));
+    document.addEventListener('click', (event) => {
+      if (!primaryNav.classList.contains('is-open')) return;
+      const clickedInside = primaryNav.contains(event.target) || navToggle.contains(event.target);
+      if (!clickedInside) closeNav();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && primaryNav.classList.contains('is-open')) {
+        closeNav();
+        navToggle.focus();
+      }
+    });
+    window.addEventListener('resize', () => { if (window.innerWidth > 760) closeNav(); });
+  }
+
+  /* Header state on scroll */
+  const header = document.querySelector('.site-header');
+  if (header) {
+    const setScrolled = () => header.classList.toggle('scrolled', window.scrollY > 8);
+    setScrolled();
+    window.addEventListener('scroll', setScrolled, { passive: true });
+  }
+
+  /* Scroll-spy nav highlighting */
+  const sections = document.querySelectorAll('main section[id]');
+  const navLinks = document.querySelectorAll('.primary-nav a');
+  if (sections.length && navLinks.length && 'IntersectionObserver' in window) {
+    const linkFor = (id) => document.querySelector(`.primary-nav a[href="#${id}"]`);
+    const spyObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const link = linkFor(entry.target.id);
+        if (!link) return;
+        navLinks.forEach((l) => l.classList.remove('active'));
+        link.classList.add('active');
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    sections.forEach((section) => spyObserver.observe(section));
+  }
+
+  /* Scroll-reveal */
+  const revealTargets = document.querySelectorAll(
+    ['.hero-content', '.about > *', '.education-card', '.skills-list li', '.project-card', '.contact > *'].join(', ')
+  );
+  if (revealTargets.length) {
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      revealTargets.forEach((el) => el.classList.add('reveal', 'is-visible'));
+    } else {
+      revealTargets.forEach((el, i) => {
+        el.classList.add('reveal');
+        el.style.transitionDelay = `${(i % 4) * 90}ms`;
+      });
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+      revealTargets.forEach((el) => revealObserver.observe(el));
+    }
+  }
+})();
+</script>
+</body>
+</html>
